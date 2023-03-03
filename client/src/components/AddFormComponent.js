@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { FaPlus, FaPencilAlt, FaBan } from "react-icons/fa";
 import {
   Button,
@@ -11,88 +12,95 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { addContact } from "../redux/store";
 
-export default class AddFormComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isAddFormVisible: false,
-      name: "",
-      phone: "",
-    };
-  }
+const AddFormComponent = () => {
+  const dispatch = useDispatch();
+  const [isAddFormVisible, setIsAddFormVisible] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
 
-  toggleAddForm = () => {
-    this.setState({ isAddFormVisible: !this.state.isAddFormVisible });
+  const toggleAddForm = () => {
+    setIsAddFormVisible(!isAddFormVisible);
   };
 
-  handleNameChange = (e) => {
-    this.setState({ name: e.target.value });
+  const handleNameChange = (e) => {
+    setName(e.target.value);
   };
 
-  handlePhoneChange = (e) => {
-    this.setState({ phone: e.target.value });
+  const handlePhoneChange = (e) => {
+    setPhone(e.target.value);
   };
 
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(this.state.name, this.state.phone);
+    dispatch(addContact(name, phone));
+    console.log(name, phone);
     // reset form values
-    this.setState({ name: "", phone: "" });
+    setName("");
+    setPhone("");
   };
 
-  render() {
-    return (
-      <div>
-        {!this.state.isAddFormVisible ? (
-          <Button color="primary" onClick={this.toggleAddForm} style={{ boxShadow: "0 0 10px rgba(0,0,0,0.2)" }}>
-            <FaPlus /> Add
-          </Button>
-        ) : (
-          <Form onSubmit={this.handleSubmit}>
-            <Card>
-              <CardHeader style={{ boxShadow: "0 0 3px rgba(0,0,0,0.2)" }}>
-                <h5 className="mb-0">Adding Form</h5>
-              </CardHeader>
-              <CardBody style={{ boxShadow: "0 0 3px rgba(0,0,0,0.2)" }}>
-                <Row className="row-cols-lg-auto g-3 align-items-center">
-                  <Label for="name">name</Label>
-                  <Col>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="name"
-                      type="text"
-                    />
-                  </Col>
-                  <Label for="phone">Phone</Label>
-                  <Col>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      placeholder="phone"
-                      type="text"
-                    />
-                  </Col>
-                  <Button color="success" type="submit" className="text-white">
-                    <FaPencilAlt className="mr-2" /> Save
-                  </Button>
-                  <Button
-                    color="warning"
-                    onClick={this.toggleAddForm}
-                    className="text-white"
-                  >
-                    <FaBan className="mr-2" /> Cancel
-                  </Button>
-                </Row>
-              </CardBody>
-            </Card>
-          </Form>
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      {!isAddFormVisible ? (
+        <Button
+          color="primary"
+          onClick={toggleAddForm}
+          style={{ boxShadow: "0 0 10px rgba(0,0,0,0.2)" }}
+        >
+          <FaPlus /> Add
+        </Button>
+      ) : (
+        <Form onSubmit={handleSubmit}>
+          <Card>
+            <CardHeader style={{ boxShadow: "0 0 3px rgba(0,0,0,0.2)" }}>
+              <h5 className="mb-0">Adding Form</h5>
+            </CardHeader>
+            <CardBody style={{ boxShadow: "0 0 3px rgba(0,0,0,0.2)" }}>
+              <Row className="row-cols-lg-auto g-3 align-items-center">
+                <Label for="name">name</Label>
+                <Col>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="name"
+                    type="text"
+                    value={name}
+                    onChange={handleNameChange}
+                  />
+                </Col>
+                <Label for="phone">Phone</Label>
+                <Col>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    placeholder="phone"
+                    type="text"
+                    value={phone}
+                    onChange={handlePhoneChange}
+                  />
+                </Col>
+                <Button color="success" type="submit" className="text-white">
+                  <FaPencilAlt className="mr-2" /> Save
+                </Button>
+                <Button
+                  color="warning"
+                  onClick={toggleAddForm}
+                  className="text-white"
+                >
+                  <FaBan className="mr-2" /> Cancel
+                </Button>
+              </Row>
+            </CardBody>
+          </Card>
+        </Form>
+      )}
+    </div>
+  );
+};
+
+export default AddFormComponent;
 
 // import React from 'react';
 // import { Button } from 'reactstrap';
