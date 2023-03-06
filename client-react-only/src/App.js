@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { Container } from "reactstrap";
+import SearchFormComponent from "./components/searchFormComponent";
+import TitleComponent from "./components/TitleComponent";
+import AddContainer from "./containers/AddContainer";
+import TableContainer from "./containers/TableContainer";
+import { fetchContacts } from "./api/api";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      contacts: [],
+    };
+  }
+
+  async componentDidMount() {
+    try {
+      const data = await fetchContacts();
+      console.log(data);
+      this.setState({ contacts: data });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  handleAddClick = (data) => {
+    this.setState({ contacts: data });
+  };
+
+  handleDeleteClick = (data) => {
+    this.setState({ contacts: data });
+  };
+
+  handleSaveClick = (updatedData) => {
+    this.setState({ contacts: updatedData });
+  };
+
+  render() {
+    return (
+      <Container>
+        <TitleComponent />
+        <div style={{ marginTop: "25px" }}></div>
+        <AddContainer onAddClick={this.handleAddClick} />
+        <div style={{ marginTop: "25px" }}></div>
+        <SearchFormComponent />
+        <div style={{ marginTop: "25px" }}></div>
+        <TableContainer
+          contacts={this.state.contacts}
+          onDeleteClick={this.handleDeleteClick}
+          onSaveClick={this.handleSaveClick}
+        />
+      </Container>
+    );
+  }
 }
-
-export default App;
