@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import TableComponent from "../components/TableComponent";
-import { deleteContacts, fetchContacts, updateContact } from "../api/api";
+import { deleteContacts, updateContact } from "../api/api";
 
 export default class TableContainer extends Component {
   constructor(props) {
@@ -39,8 +39,8 @@ export default class TableContainer extends Component {
       const data = await updateContact(id, this.state.name, this.state.phone);
       console.log(id, this.state.name, this.state.phone);
       console.log(data)
-      const response = await fetchContacts()
-      this.props.onSaveClick(response)
+      const response = await this.props.onSaveClick(data)
+      console.log(response)
     } catch (e) {
       console.log(e);
     }
@@ -51,8 +51,8 @@ export default class TableContainer extends Component {
       console.log("id: " + id);
       const data = await deleteContacts(id);
       console.log(data);
-      const response = await fetchContacts();
-      this.props.onDeleteClick(response);
+      const response = await this.props.onDeleteClick(id);
+      console.log(response);
     } catch (e) {
       console.error(e);
     }
@@ -60,14 +60,15 @@ export default class TableContainer extends Component {
 
   render() {
     const { editing, name, phone, indexClick } = this.state;
-    const { contacts } = this.props;
+    const { contacts, searchResult } = this.props;
+    const tableList = searchResult ? searchResult : contacts
     return (
       <TableComponent
         editing={editing}
         name={name}
         phone={phone}
         indexClick={indexClick}
-        contacts={contacts}
+        contacts={tableList}
         handleEditClick={this.handleEditClick}
         handleSaveClick={this.handleSaveClick}
         handleDeleteClick={this.handleDeleteClick}

@@ -11,6 +11,8 @@ export default class App extends Component {
     super(props);
     this.state = {
       contacts: [],
+      searchResult: null,
+      searchKeyword: null,
     };
   }
 
@@ -25,15 +27,106 @@ export default class App extends Component {
   }
 
   handleAddClick = (data) => {
-    this.setState({ contacts: data });
+    const { contacts, searchKeyword } = this.state;
+    contacts.push(data);
+    if (searchKeyword) {
+      const searchResult = contacts.filter(
+        (contact) =>
+          contact.name
+            .toLowerCase()
+            .includes(searchKeyword.name.toLowerCase()) &&
+          contact.phone.includes(searchKeyword.phone)
+      );
+      return this.setState({
+        ...this.state,
+        searchResult: searchResult,
+        contacts: contacts,
+      });
+    }
+
+    return this.setState({
+      ...this.state,
+      contacts,
+    });
   };
 
-  handleDeleteClick = (data) => {
-    this.setState({ contacts: data });
+  handleDeleteClick = (id) => {
+    const { contacts, searchKeyword } = this.state;
+    const updateDeletedContacts = contacts.filter(
+      (contact) => contact.id !== id
+    );
+
+    if (searchKeyword) {
+      const updatedSearchResult = updateDeletedContacts.filter(
+        (contact) =>
+          contact.name
+            .toLowerCase()
+            .includes(searchKeyword.name.toLowerCase()) &&
+          contact.phone.includes(searchKeyword.phone)
+      );
+      return this.setState({
+        ...this.state,
+        searchResult: updatedSearchResult,
+        contacts: updateDeletedContacts,
+      });
+    }
+
+    return this.setState({
+      ...this.state,
+      contacts: updateDeletedContacts,
+    });
   };
 
   handleSaveClick = (updatedData) => {
-    this.setState({ contacts: updatedData });
+    const { contacts, searchKeyword } = this.state;
+    const updatedContacts = contacts.map((contact) => {
+      if (contact.id === updatedData.id) {
+        return {
+          ...contact,
+          name: updatedData.name,
+          phone: updatedData.phone,
+        };
+      } else {
+        return contact;
+      }
+    });
+
+    if (searchKeyword) {
+      const updatedSearchResult = updatedContacts.filter(
+        (contact) =>
+          contact.name
+            .toLowerCase()
+            .includes(searchKeyword.name.toLowerCase()) &&
+          contact.phone.includes(searchKeyword.phone)
+      );
+      return this.setState({
+        ...this.state,
+        searchResult: updatedSearchResult,
+        contacts: updatedContacts,
+      });
+    }
+
+    return this.setState({
+      ...this.state,
+      contacts: updatedContacts,
+    });
+  };
+
+  handleSearchInput = (name, phone) => {
+    const { contacts } = this.state;
+    const searchResult = contacts.filter(
+      (contact) =>
+        contact.name.toLowerCase().includes(name.toLowerCase()) &&
+        contact.phone.includes(phone)
+    );
+    return this.setState({
+      ...this.state,
+      searchResult,
+      searchKeyword: {
+        name,
+        phone,
+      },
+    });
   };
 
   render() {
@@ -43,10 +136,11 @@ export default class App extends Component {
         <div style={{ marginTop: "25px" }}></div>
         <AddContainer onAddClick={this.handleAddClick} />
         <div style={{ marginTop: "25px" }}></div>
-        <SearchFormComponent />
+        <SearchFormComponent onSearchInput={this.handleSearchInput} />
         <div style={{ marginTop: "25px" }}></div>
         <TableContainer
           contacts={this.state.contacts}
+          searchResult={this.state.searchResult}
           onDeleteClick={this.handleDeleteClick}
           onSaveClick={this.handleSaveClick}
         />

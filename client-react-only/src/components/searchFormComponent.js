@@ -20,15 +20,19 @@ class SearchFormComponent extends Component {
   }
 
   handleSearchInputName = (event) => {
+    const {searchInputPhone} = this.state
     const keyword = event.target.value;
     this.setState({ searchInputName: keyword });
-    // call search function here
+    this.props.onSearchInput(keyword, searchInputPhone)
+    console.log(keyword, searchInputPhone)
   };
 
   handleSearchInputPhone = (event) => {
+    const {searchInputName} = this.state
     const keyword = event.target.value;
     this.setState({ searchInputPhone: keyword });
-    // call search function here
+    this.props.onSearchInput(searchInputName, keyword)
+    console.log(searchInputName, keyword)
   };
 
   render() {

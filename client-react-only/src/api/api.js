@@ -17,7 +17,7 @@ export const addContact = async (name, phone) => {
         phone,
     })
     console.log(response)
-    return response.data
+    return response.data.data
 }
 
 export const updateContact = async (id, name, phone) => {
@@ -25,5 +25,5 @@ export const updateContact = async (id, name, phone) => {
         name,
         phone,
     })
-    return response.data
+    return response.data.data
 }

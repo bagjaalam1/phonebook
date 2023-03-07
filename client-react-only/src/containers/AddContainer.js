@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { addContact, fetchContacts } from "../api/api";
+import { addContact } from "../api/api";
 import AddButtonComponent from "../components/AddButtonComponent";
 import AddFormComponent from "../components/AddFormComponent";
 
@@ -31,11 +31,12 @@ export default class AddContainer extends Component {
   async handleSubmit(e) {
     e.preventDefault();
     const data = await addContact(this.state.name, this.state.phone);
+    console.log('Balikan Data addContact')
     console.log(data)
     console.log(this.state.name, this.state.phone);
-    const response = await fetchContacts();
+    const response = await this.props.onAddClick(data);
+    console.log('Balikan data response: ')
     console.log(response)
-    this.props.onAddClick(response)
     this.setState({ name: "", phone: "" });
   }
 
