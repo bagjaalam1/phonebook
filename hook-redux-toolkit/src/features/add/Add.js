@@ -35,7 +35,6 @@ const Add = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(addContact({name, phone}));
-    // dispatch(setContact())
     console.log(name, phone);
     // reset form values
     setName("");

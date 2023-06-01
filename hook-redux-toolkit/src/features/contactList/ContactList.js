@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  deleteContact,
   fetchContacts,
   selectContacts,
   updateContact,
@@ -10,14 +11,6 @@ import { FaPencilAlt, FaTrash, FaCheckCircle } from "react-icons/fa";
 
 const ContactList = () => {
   const dispatch = useDispatch();
-  // const contacts = useSelector(
-  //   (state) =>
-  //     // state.phonebook.searchResult
-  //     //   ? state.phonebook.searchResult
-  //     //   : state.phonebook.contacts
-  //     state.phonebook.contacts
-  // );
-
   const contacts = useSelector(selectContacts);
 
   const [editing, setEditing] = useState(false);
@@ -82,7 +75,6 @@ const ContactList = () => {
                   onClick={() => {
                     setEditing(false);
                     dispatch(updateContact({ id: item.id, name, phone }));
-                    // dispatch(editContactSuccess({ id: item.id, name, phone }));
                   }}
                 >
                   <FaCheckCircle /> Save
@@ -99,7 +91,7 @@ const ContactList = () => {
                   <Button
                     color="danger"
                     size="sm"
-                    // onClick={() => dispatch(deleteContact(item.id))}
+                    onClick={() => dispatch(deleteContact({id: item.id}))}
                   >
                     <FaTrash /> Delete
                   </Button>

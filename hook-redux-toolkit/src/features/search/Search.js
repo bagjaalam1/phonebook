@@ -1,6 +1,5 @@
-import React, { useState, useEffect} from "react";
+import React, { useState} from "react";
 import { useDispatch } from 'react-redux';
-// import { searchContacts, fetchContacts } from "../redux/store";
 import {
   Card,
   CardHeader,
@@ -10,6 +9,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { searchAction } from "../contactList/ContactListSlice";
 
 function Search() {
 
@@ -18,20 +18,16 @@ function Search() {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // dispatch(fetchContacts());
-  }, [dispatch]);
-
   const handleSearchInputName = (event) => {
     const keyword = event.target.value;
     setSearchInputName(keyword);
-    // dispatch(searchContacts(keyword, searchInputPhone));
+    dispatch(searchAction({name: keyword, phone: searchInputPhone}));
   };
 
   const handleSearchInputPhone = (event) => {
     const keyword = event.target.value;
     setSearchInputPhone(keyword);
-    // dispatch(searchContacts(searchInputName, keyword));
+    dispatch(searchAction({name: searchInputName, phone: keyword}));
   };
 
   return (

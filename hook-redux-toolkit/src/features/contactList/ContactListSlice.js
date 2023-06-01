@@ -1,44 +1,70 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { addContact } from "../add/AddSlice";
+import { searchContacts } from "../search/SearchSlice";
+import {
+  deleteContactAPI,
+  fetchContactsAPI,
+  updateContactAPI,
+} from "./ContactListAPI";
+
+const initialState = {
+  contacts: [],
+};
 
 export const fetchContacts = createAsyncThunk(
   "phonebook/fetchContacts",
-  async () => {
-    const response = await axios.get("http://localhost:3000/api/phonebook");
-    console.log(response.data.data);
-    return response.data.data;
-  }
+  fetchContactsAPI
 );
 
 export const updateContact = createAsyncThunk(
   "phonebook/updateContact",
-  async ({ id, name, phone }) => {
-    console.log(id, name, phone);
-    const response = await axios.put(
-      `http://localhost:3000/api/phonebook/${id}`,
-      { name, phone }
-    );
-    console.log(response.data);
-    return response.data.data;
-  }
+  updateContactAPI
+);
+
+export const deleteContact = createAsyncThunk(
+  "phonebook/deleteContact",
+  deleteContactAPI
 );
 
 export const phonebookSlice = createSlice({
   name: "phonebook",
-  initialState: {
-    contacts: [],
+  initialState,
+  reducers: {
+    searchContacts,
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.fulfilled, (state, action) => {
         return {
           ...state,
-          contacts: action.payload
+          contacts: action.payload,
+        };
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        const contacts = state.contacts;
+        console.log(contacts);
+        console.log(state);
+        if (state.searchKeyword) {
+          const updatedSearchResult = contacts.filter(
+            (contact) =>
+              contact.name
+                .toLowerCase()
+                .includes(state.searchKeyword.name.toLowerCase()) &&
+              contact.phone.includes(state.searchKeyword.phone)
+          );
+          return {
+            ...state,
+            searchResult: [...updatedSearchResult, action.payload],
+            contacts: [...contacts, action.payload],
+          };
         }
+        return {
+          ...state,
+          contacts: [...contacts, action.payload],
+        };
       })
       .addCase(updateContact.fulfilled, (state, action) => {
+        console.log(action.payload);
         const updatedContacts = state.contacts.map((contact) => {
           if (contact.id === action.payload.id) {
             return {
@@ -50,17 +76,59 @@ export const phonebookSlice = createSlice({
             return contact;
           }
         });
-        state.contacts = updatedContacts;
-      })
-      .addCase(addContact.fulfilled, (state, action) => {
+        if (state.searchKeyword) {
+          const updatedSearchResult = updatedContacts.filter(
+            (contact) =>
+              contact.name
+                .toLowerCase()
+                .includes(state.searchKeyword.name.toLowerCase()) &&
+              contact.phone.includes(state.searchKeyword.phone)
+          );
+          return {
+            ...state,
+            searchResult: updatedSearchResult,
+            contacts: updatedContacts,
+          };
+        }
         return {
           ...state,
-          contacts: [...state.contacts, action.payload],
+          contacts: updatedContacts,
+        };
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        console.log(state.contacts);
+        console.log(action.payload);
+        const updateDeletedContacts = state.contacts.filter(
+          (contact) => contact.id !== action.payload
+        );
+        console.log(updateDeletedContacts);
+        if (state.searchKeyword) {
+          const updatedSearchResult = updateDeletedContacts.filter(
+            (contact) =>
+              contact.name
+                .toLowerCase()
+                .includes(state.searchKeyword.name.toLowerCase()) &&
+              contact.phone.includes(state.searchKeyword.phone)
+          );
+          return {
+            ...state,
+            searchResult: updatedSearchResult,
+            contacts: updateDeletedContacts,
+          };
+        }
+        return {
+          ...state,
+          contacts: updateDeletedContacts,
         };
       });
   },
 });
 
-export const selectContacts = (state) => state.phonebook.contacts
+export const searchAction = phonebookSlice.actions.searchContacts;
+
+export const selectContacts = (state) =>
+  state.phonebook.searchResult
+    ? state.phonebook.searchResult
+    : state.phonebook.contacts;
 
 export default phonebookSlice.reducer;
