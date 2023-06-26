@@ -1,8 +1,25 @@
 import React, { useState } from "react";
 import { Box, Stack, FormControl, Input } from "native-base";
 import { Text, StyleSheet } from "react-native";
+import { searchAction } from "../contactList/ContactListSlice";
+import { useDispatch } from "react-redux";
 
 const search = () => {
+  const [searchInputName, setSearchInputName] = useState('')
+  const [searchInputPhone, setSearchInputPhone] = useState('')
+
+  const dispatch = useDispatch()
+
+  const handleSearchInputName = (value) => {
+    setSearchInputName(value)
+    dispatch(searchAction({name: value, phone: searchInputPhone}))
+  }
+
+  const handleSearchInputPhone = (value) => {
+    setSearchInputPhone(value)
+    dispatch(searchAction({name: searchInputName, phone: value}))
+  }
+
   return (
     <Box style={styles.container}>
       <Box style={styles.cardHeader}>
@@ -14,13 +31,13 @@ const search = () => {
             <FormControl.Label>
               <Text style={styles.labelText}>Name</Text>
             </FormControl.Label>
-            <Input fontSize={15} />
+            <Input fontSize={15} onChangeText={handleSearchInputName}/>
           </FormControl>
           <FormControl style={styles.formContainer}>
             <FormControl.Label>
               <Text style={styles.labelText}>Phone</Text>
             </FormControl.Label>
-            <Input fontSize={15} />
+            <Input fontSize={15} onChangeText={handleSearchInputPhone}/>
           </FormControl>
         </Stack>
       </Box>

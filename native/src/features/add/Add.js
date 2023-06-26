@@ -3,8 +3,12 @@ import { Box, Button, Stack, Divider, FormControl, Input } from "native-base";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { faBan, faPlus, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { addContact } from "./AddSlice";
 
 const Add = () => {
+  const dispatch = useDispatch()
+
   const [isAddFormVisible, setIsAddFormVisible] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -13,13 +17,20 @@ const Add = () => {
     setIsAddFormVisible(!isAddFormVisible);
   };
 
-  const handleNameChange = (text) => {
-    setName(text);
+  const handleNameChange = (value) => {
+    setName(value);
   };
 
-  const handlePhoneChange = (text) => {
-    setPhone(text);
+  const handlePhoneChange = (value) => {
+    setPhone(value);
   };
+  
+  const handleSubmit = () => {
+    dispatch(addContact({name, phone}))
+    //reset form values
+    setName("")
+    setPhone("")
+  }
 
   return (
     <View style={styles.addContainer}>
@@ -48,18 +59,18 @@ const Add = () => {
                 <FormControl.Label>
                   <Text style={styles.labelText}>Name</Text>
                 </FormControl.Label>
-                <Input fontSize={15} />
+                <Input fontSize={15} onChangeText={handleNameChange} value={name}/>
               </FormControl>
               <FormControl style={styles.formContainer}>
                 <FormControl.Label>
                   <Text style={styles.labelText}>Phone</Text>
                 </FormControl.Label>
-                <Input fontSize={15} />
+                <Input fontSize={15} onChangeText={handlePhoneChange} value={phone}/>
               </FormControl>
             </Stack>
             <Box px={4} style={styles.buttonContainer} >
             <Button
-                onPress={toggleAddForm}
+                onPress={handleSubmit}
                 size="lg"
                 style={styles.saveButton}
               >
