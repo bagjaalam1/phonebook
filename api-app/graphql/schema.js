@@ -1,20 +1,27 @@
 const { buildSchema } = require('graphql');
 
 const schema = buildSchema(`
-  type Phonebook {
+  type Contact {
     id: ID!
+    name: String!
+    phone: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input ContactInput {
     name: String!
     phone: String!
   }
 
   type Query {
-    phonebook: [Phonebook]
+    getContacts: [Contact]
   }
 
   type Mutation {
-    addPhonebook(name: String!, phone: String!): Phonebook
-    updatePhonebook(id: ID!, name: String!, phone: String!): Phonebook
-    deletePhonebook(id: ID!): Boolean
+    addContact(input: ContactInput): Contact
+    updateContact(id: ID!, input: ContactInput): Contact
+    deleteContact(id: ID!): Boolean
   }
 `);
 

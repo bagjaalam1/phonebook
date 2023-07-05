@@ -20,6 +20,12 @@ app.use('/graphql', graphqlHTTP({
     schema: schema,
     rootValue: resolvers,
     graphiql: true,
+    customFormatErrorFn: (error) => ({
+        message: error.message,
+        locations: error.locations,
+        stack: error.stack ? error.stack.split('\n') : [],
+        path: error.path,
+      })
 }))
 
 module.exports = app;
