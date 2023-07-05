@@ -33,7 +33,7 @@ const resolvers = {
   deleteContact: async ({id}) => {
     try {
       await models.Contact.destroy({ where: { id } });
-      return true
+      return id
     } catch (e) {
       return console.error(e)
     }

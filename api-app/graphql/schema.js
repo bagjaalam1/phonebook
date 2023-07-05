@@ -21,7 +21,7 @@ const schema = buildSchema(`
   type Mutation {
     addContact(input: ContactInput): Contact
     updateContact(id: ID!, input: ContactInput): Contact
-    deleteContact(id: ID!): Boolean
+    deleteContact(id: ID!): String
   }
 `);
 
