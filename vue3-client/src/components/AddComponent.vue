@@ -13,14 +13,15 @@
                     <div class="row row-cols-lg-auto g-3 align-items-center">
                         <label for="name">Name</label>
                         <div class="col">
-                            <input id="name" name="name" class="form-control" placeholder="Name" type="text" v-model="name">
+                            <input id="name" name="name" class="form-control" placeholder="Name" type="text"
+                                v-model="newContact.name">
                         </div>
                         <label for="phone">Phone</label>
                         <div class="col">
                             <input id="phone" name="phone" class="form-control" placeholder="Phone" type="text"
-                                v-model="phone">
+                                v-model="newContact.phone">
                         </div>
-                        <button class="btn btn-success text-white" type="submit">
+                        <button class="btn btn-success text-white me-2" type="submit">
                             <i class="fa fa-pencil-alt mr-2"></i> Save
                         </button>
                         <button class="btn btn-warning text-white" @click="toggleAddForm">
@@ -34,26 +35,39 @@
 </template>
   
 <script>
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+
 export default {
-    name: 'AddComponent',
-    data() {
-        return {
-            isAddFormVisible: false,
+    setup() {
+        const store = useStore();
+        const isAddFormVisible = ref(false);
+        const newContact = ref({
             name: '',
-            phone: '',
+            phone: ''
+        })
+
+        const toggleAddForm = () => {
+            isAddFormVisible.value = !isAddFormVisible.value;
         };
-    },
-    methods: {
-        toggleAddForm() {
-            this.isAddFormVisible = !this.isAddFormVisible;
-        },
-        handleSubmit() {
-            this.$store.dispatch('addContact', { name: this.name, phone: this.phone });
-            console.log(this.name, this.phone);
-            // reset form values
-            this.name = '';
-            this.phone = '';
-        },
+
+        const handleSubmit = () => {
+            console.log(newContact.value.name, newContact.value.phone);
+            store.dispatch('addContact', {
+                name: newContact.value.name,
+                phone: newContact.value.phone,
+            })
+            // Reset form values
+            newContact.value.name = '';
+            newContact.value.phone = '';
+        };
+
+        return {
+            isAddFormVisible,
+            newContact,
+            toggleAddForm,
+            handleSubmit,
+        };
     },
 };
 </script>

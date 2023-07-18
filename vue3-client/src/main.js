@@ -1,18 +1,18 @@
-import { createApp } from 'vue'
-import { createStore } from 'vuex'
-import App from './App.vue'
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap/dist/js/bootstrap.js"
+import { createApp, provide, h } from "vue";
+import App from "./App.vue";
+import { DefaultApolloClient } from '@vue/apollo-composable'
+import apolloClient from "./apollo";
+import store from './store'
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.js";
 
-const app = createApp(App)
+const app = createApp({
+  setup() {
+    provide(DefaultApolloClient, apolloClient);
+  },
 
-const store = createStore({
-    state() {
-        return {
-            contacts: []
-        }
-    }
-})
+  render: () => h(App),
+});
 
-app.use(store)
-app.mount('#app')
+app.use(store);
+app.mount("#app");
