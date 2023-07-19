@@ -41,7 +41,7 @@
                             <button class="btn btn-success btn-sm me-2" @click="editContact(item)">
                                 <i class="fa fa-pencil-alt"></i> Edit
                             </button>
-                            <button class="btn btn-danger btn-sm">
+                            <button class="btn btn-danger btn-sm" @click="deleteContact(item.id)">
                                 <i class="fa fa-trash"></i> Delete
                             </button>
                         </div>
@@ -61,48 +61,46 @@ export default {
     setup() {
         const store = useStore();
 
-        const contacts = computed(()=> store.getters.getContacts)
-        const loading = computed(()=> store.getters.getLoading)
+        const contacts = computed(() => store.getters.getContacts);
+        const loading = computed(() => store.getters.getLoading);
 
-        console.log(contacts)
+        watchEffect(() => {
+            store.dispatch('fetchContacts');
+        });
 
-        watchEffect(()=> {
-            store.dispatch('fetchContacts')
-        })
-
-        const state = {
-            editing: ref(false),
-            name: ref(''),
-            phone: ref(''),
-            indexClick: ref(null),
-        };
+        const editing = ref(false);
+        const name = ref('');
+        const phone = ref('');
+        const indexClick = ref(null);
 
         function editContact(item) {
-            watchEffect(() => {
-                console.log(state.editing.value)
-                state.editing.value = true;
-                state.name.value = item.name;
-                state.phone.value = item.phone;
-                state.indexClick.value = item.id;
-                console.log(state.name)
-                console.log(state.phone)
-                console.log(state.editing)
-                console.log(state.editing.value)
-                console.log(state.indexClick.value)
+            editing.value = true;
+            name.value = item.name;
+            phone.value = item.phone;
+            indexClick.value = item.id;
+        }
+
+        function saveContact(id) {
+            editing.value = false;
+            store.dispatch('updateContact', {
+                id: id,
+                name: name.value,
+                phone: phone.value
             })
         }
 
-        function saveContact() {
-            state.editing = false;
+        function deleteContact(id) {
+            store.dispatch('deleteContact', {id})
         }
 
         return {
-            editing: state.editing.value,
-            indexClick: state.indexClick.value,
-            name: state.name.value,
-            phone: state.phone.value,
+            editing,
+            indexClick,
+            name,
+            phone,
             editContact,
             saveContact,
+            deleteContact,
             contacts,
             loading,
         };

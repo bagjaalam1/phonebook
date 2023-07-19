@@ -14,12 +14,54 @@ const store = createStore({
     setLoading(state, loading) {
       state.loading = loading;
     },
-    setAddContact(state, contact) {
-      state.contacts = [...state.contacts, contact];
+    setAddContact(state, addedContact) {
+      state.contacts = [...state.contacts, addedContact];
+      state.searchResult = [...state.searchResult, addedContact];
     },
     setSearchResult(state, searchResult) {
-      console.log(searchResult);
       state.searchResult = searchResult;
+    },
+    setUpdateContact(state, updateData) {
+      if (state.searchResult) {
+        const updatedContacts = state.searchResult.map((contact) => {
+          if (contact.id === updateData.id) {
+            return {
+              ...contact,
+              name: updateData.name,
+              phone: updateData.phone,
+            };
+          } else {
+            return contact;
+          }
+        });
+        state.searchResult = updatedContacts;
+      } else {
+        const updatedContacts = state.contacts.map((contact) => {
+          if (contact.id === updateData.id) {
+            return {
+              ...contact,
+              name: updateData.name,
+              phone: updateData.phone,
+            };
+          } else {
+            return contact;
+          }
+        });
+        state.contacts = updatedContacts;
+      }
+    },
+    setDeleteContact(state, id) {
+      if (state.searchResult) {
+        const updateDeletedData = state.searchResult.filter((contact) => {
+          return contact.id !== id;
+        });
+        state.searchResult = updateDeletedData;
+      } else {
+        const updateDeletedData = state.contacts.filter((contact) => {
+          return contact.id !== id;
+        });
+        state.contacts = updateDeletedData;
+      }
     },
   },
   actions: {
@@ -65,27 +107,60 @@ const store = createStore({
           },
         });
         const addedContact = data.addContact;
+
         context.commit("setAddContact", addedContact);
       } catch (e) {
         console.log(e);
       }
     },
     searchContacts(context, { name, phone }) {
-      console.log(name, phone);
-      console.log(context.state.contacts);
       const searchResult = context.state.contacts.filter((contact) => {
         return (
           contact.name.toLowerCase().includes(name.toLowerCase()) &&
           contact.phone.includes(phone)
         );
       });
-      console.log(searchResult);
       context.commit("setSearchResult", searchResult);
+    },
+    async updateContact(context, { id, name, phone }) {
+      const mutation = gql`
+        mutation UpdateContact($id: ID!, $input: ContactInput!) {
+          updateContact(id: $id, input: $input) {
+            id
+            name
+            phone
+          }
+        }
+      `;
+      const variables = { id, input: { name, phone } };
+
+      try {
+        const response = await apolloClient.mutate({ mutation, variables });
+        const data = response.data.updateContact;
+        context.commit("setUpdateContact", data);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async deleteContact(context, { id }) {
+      const mutation = gql`
+        mutation DeleteContact($id: ID!) {
+          deleteContact(id: $id)
+        }
+      `;
+      const variables = { id };
+
+      try {
+        const response = await apolloClient.mutate({ mutation, variables });
+        const data = response.data.deleteContact;
+        context.commit("setDeleteContact", data);
+      } catch (e) {
+        console.log(e);
+      }
     },
   },
   getters: {
     getContacts(state) {
-      console.log(state.searchResult);
       return state.searchResult ? state.searchResult : state.contacts;
     },
     getLoading(state) {

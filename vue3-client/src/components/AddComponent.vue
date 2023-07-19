@@ -52,7 +52,6 @@ export default {
         };
 
         const handleSubmit = () => {
-            console.log(newContact.value.name, newContact.value.phone);
             store.dispatch('addContact', {
                 name: newContact.value.name,
                 phone: newContact.value.phone,
